@@ -1,0 +1,8 @@
+LEETCODE PROBLEM SOLVING
+PROBLEM->DELETE NODE FROM THE LINKED LIST
+class Solution {
+    public void deleteNode(ListNode node) {
+        node.val=node.next.val;
+        node.next=node.next.next;
+    }
+}
