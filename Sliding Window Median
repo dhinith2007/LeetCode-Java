@@ -1,0 +1,165 @@
+LEETCODE PROBLEM SOLVING
+PROBLEM->SLIDING WINDOW MEDIAN
+import java.util.*;
+
+class Solution {
+
+    TreeMap<Integer,Integer> small = new TreeMap<>();
+    TreeMap<Integer,Integer> large = new TreeMap<>();
+
+    int smallSize = 0;
+    int largeSize = 0;
+
+
+    public double[] medianSlidingWindow(int[] nums, int k) {
+
+        int n = nums.length;
+
+        double[] ans = new double[n-k+1];
+
+
+        for(int i=0;i<n;i++){
+
+            add(nums[i]);
+
+
+            if(i >= k){
+                remove(nums[i-k]);
+            }
+
+
+            if(i >= k-1){
+
+                ans[i-k+1] = getMedian(k);
+            }
+        }
+
+
+        return ans;
+    }
+
+
+
+    void add(int num){
+
+        if(small.isEmpty() ||
+           num <= small.lastKey()){
+
+            small.put(
+                num,
+                small.getOrDefault(num,0)+1
+            );
+
+            smallSize++;
+
+        }else{
+
+            large.put(
+                num,
+                large.getOrDefault(num,0)+1
+            );
+
+            largeSize++;
+        }
+
+
+        balance();
+    }
+
+
+
+    void remove(int num){
+
+        if(num <= small.lastKey()){
+
+            small.put(
+                num,
+                small.get(num)-1
+            );
+
+            if(small.get(num)==0)
+                small.remove(num);
+
+            smallSize--;
+
+        }else{
+
+            large.put(
+                num,
+                large.get(num)-1
+            );
+
+            if(large.get(num)==0)
+                large.remove(num);
+
+            largeSize--;
+        }
+
+
+        balance();
+    }
+
+
+
+
+    void balance(){
+
+        while(smallSize > largeSize+1){
+
+            int x = small.lastKey();
+
+            small.put(x,small.get(x)-1);
+
+            if(small.get(x)==0)
+                small.remove(x);
+
+            smallSize--;
+
+
+            large.put(
+                x,
+                large.getOrDefault(x,0)+1
+            );
+
+            largeSize++;
+        }
+
+
+
+        while(smallSize < largeSize){
+
+            int x = large.firstKey();
+
+
+            large.put(x,large.get(x)-1);
+
+            if(large.get(x)==0)
+                large.remove(x);
+
+            largeSize--;
+
+
+            small.put(
+                x,
+                small.getOrDefault(x,0)+1
+            );
+
+            smallSize++;
+        }
+    }
+
+
+
+    double getMedian(int k){
+
+        if(k%2==1){
+
+            return small.lastKey();
+
+        }else{
+
+            return ((double)small.lastKey()
+                  + large.firstKey())/2;
+        }
+    }
+}
